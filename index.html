@@ -32,6 +32,7 @@
       justify-content: center;
       align-items: center;
       cursor: grab;
+      z-index: 2;
     }
 
     #solar-system {
@@ -89,9 +90,12 @@
     /* Star Background Particles */
     #bg-stars {
       position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       pointer-events: none;
+      z-index: 1;
     }
 
     /* Modal / Dialogue Popup */
@@ -214,6 +218,7 @@
       font-size: 13px;
       color: rgba(255, 255, 255, 0.5);
       pointer-events: none;
+      z-index: 10;
     }
   </style>
 </head>
@@ -222,10 +227,10 @@
   <!-- Starfield Canvas -->
   <canvas id="bg-stars"></canvas>
 
-  <!-- Audio Player Support (MP3 / Audio URL) -->
-  <audio id="bg-music" loop>
-    <!-- สามารถเปลี่ยนลิงก์เพลง MP3 ตรงนี้ได้ครับ -->
-    <source src="ScreenRecording_08-01-2569-6-58-44-PM_1.mp3" type="audio/mpeg">
+  <!-- Audio Player Support -->
+  <audio id="bg-music" loop preload="auto">
+    <!-- แนะนำให้ตั้งชื่อไฟล์เพลงใน GitHub ให้สั้นๆ เช่น song.mp3 -->
+    <source src="pleng" type="audio/mpeg">
   </audio>
 
   <!-- Music Controller Bar -->
@@ -271,7 +276,7 @@
 
   <script>
     // --- 1. System State & Progression ---
-    let currentStep = 0; // 0: Neptune -> 1: Venus -> 2: Mercury -> 3: Sun
+    let currentStep = 0;
 
     const storyData = [
       {
@@ -293,7 +298,6 @@
         nextBodyId: "sun"
       },
       {
-        // Final Sun Question
         text: "คะนิตตเป็นแฟนกันมั้ย 🤭. . 👌🏻♥️",
         isFinal: true
       }
@@ -311,10 +315,9 @@
       const data = storyData[index];
 
       textContainer.innerText = data.text;
-      btnGroup.innerHTML = ''; // Reset buttons
+      btnGroup.innerHTML = '';
 
       if (data.isFinal) {
-        // Final Question: Yes / Runaway No
         btnGroup.innerHTML = `
           <button class="btn btn-yes" onclick="finishStory()">Yes 💖</button>
           <button class="btn btn-no" id="btn-no">No</button>
@@ -369,7 +372,6 @@
     let rotX = 20, rotY = 0;
     let angle = 0;
 
-    // Orbit Radii
     const planets = [
       { id: 'planet-neptune', radius: 210, speed: 0.008 },
       { id: 'planet-venus', radius: 110, speed: 0.015 },
@@ -379,7 +381,6 @@
     function animateUniverse() {
       angle += 1;
       
-      // Orbit Motion
       planets.forEach(p => {
         const el = document.getElementById(p.id);
         const rad = (angle * p.speed);
@@ -388,13 +389,11 @@
         el.style.transform = `translate3d(${x}px, ${y}px, 0px)`;
       });
 
-      // Universe Rotation
       system.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
       requestAnimationFrame(animateUniverse);
     }
     animateUniverse();
 
-    // Touch/Mouse Drag to Rotate Universe
     const universe = document.getElementById('universe');
     
     const startDrag = (x, y) => { isDragging = true; previousMouseX = x; previousMouseY = y; };
@@ -454,8 +453,11 @@
 
     function toggleMusic() {
       if (audio.paused) {
-        audio.play();
-        musicStatus.innerText = "กำลังเล่นเพลง 🎶";
+        audio.play().then(() => {
+          musicStatus.innerText = "กำลังเล่นเพลง 🎶";
+        }).catch(err => {
+          alert("ไม่สามารถเล่นเพลงได้ โปรดตรวจสอบว่ามีไฟล์ song.mp3 ใน GitHub หรือยังครับ");
+        });
       } else {
         audio.pause();
         musicStatus.innerText = "หยุดเพลงแล้ว 🔇";
