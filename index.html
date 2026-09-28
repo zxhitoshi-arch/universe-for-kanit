@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Our Universe 🪐✨</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #0f1026 0%, #05050d 100%);
+      color: #fff;
+    }
+
+    /* 3D Universe Container */
+    #universe {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      perspective: 1000px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: grab;
+    }
+
+    #solar-system {
+      position: relative;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+      transition: transform 0.1s ease-out;
+    }
+
+    /* Track Orbits */
+    .orbit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotateX(75deg);
+      transform-style: preserve-3d;
+      pointer-events: none;
+    }
+
+    /* Planets & Sun as Glowing Dots */
+    .celestial-body {
+      position: absolute;
+      border-radius: 50%;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .celestial-body::after {
+      content: attr(data-name);
+      position: absolute;
+      top: -22px;
+      font-size: 11px;
+      white-space: nowrap;
+      color: rgba(255, 255, 255, 0.8);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 2px 6px;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    /* Locked state styling */
+    .celestial-body.locked {
+      opacity: 0.3;
+      filter: grayscale(100%);
+      cursor: not-allowed;
+    }
+
+    /* Star Background Particles */
+    #bg-stars {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* Modal / Dialogue Popup */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(5, 5, 15, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .modal.active {
+      display: flex;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Slowly Animated Text ✨ */
+    .slow-text {
+      font-size: 20px;
+      line-height: 1.6;
+      color: #e2e8f0;
+      max-width: 320px;
+      margin-bottom: 30px;
+      opacity: 0;
+      animation: slowAppear 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+    }
+
+    @keyframes slowAppear {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Buttons Appear Slowly */
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      position: relative;
+      opacity: 0;
+      animation: slowAppear 1.2s ease 1.2s forwards;
+      justify-content: center;
+      align-items: center;
+      min-height: 60px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .btn {
+      padding: 12px 26px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .btn-next {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: white;
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+      color: white;
+    }
+
+    .btn-no {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ccc;
+      position: absolute;
+      right: 10px;
+      transition: all 0.15s ease-out;
+    }
+
+    /* Music Player Bar (Top Left) */
+    .music-player {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 8px 15px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .music-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .hint-text {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Starfield Canvas -->
+  <canvas id="bg-stars"></canvas>
+
+  <!-- Audio Player Support (MP3 / Audio URL) -->
+  <audio id="bg-music" loop>
+    <!-- สามารถเปลี่ยนลิงก์เพลง MP3 ตรงนี้ได้ครับ -->
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Music Controller Bar -->
+  <div class="music-player">
+    <button class="music-btn" id="music-toggle" onclick="toggleMusic()">🎵</button>
+    <span id="music-status">แตะเพื่อเล่นเพลง 🎶</span>
+  </div>
+
+  <!-- Universe Container -->
+  <div id="universe">
+    <div id="solar-system">
+      <!-- Orbits -->
+      <div class="orbit" style="width: 120px; height: 120px;"></div>
+      <div class="orbit" style="width: 220px; height: 220px;"></div>
+      <div class="orbit" style="width: 320px; height: 320px;"></div>
+      <div class="orbit" style="width: 420px; height: 420px;"></div>
+
+      <!-- Sun (Center - Locked Last) -->
+      <div class="celestial-body locked" id="sun" data-name="☀️ ดวงอาทิตย์" onclick="clickBody(3)" 
+           style="width: 45px; height: 45px; background: radial-gradient(#fff, #ffaa00, #ff3300); box-shadow: 0 0 35px #ffaa00; margin: -22.5px 0 0 -22.5px;"></div>
+
+      <!-- Planet 1: Mercury (Closest to Sun) -->
+      <div class="celestial-body locked" id="planet-mercury" data-name="🪐 ดาวพุธ" onclick="clickBody(2)" 
+           style="width: 14px; height: 14px; background: #a5b4fc; box-shadow: 0 0 10px #a5b4fc;"></div>
+
+      <!-- Planet 2: Venus -->
+      <div class="celestial-body locked" id="planet-venus" data-name="🌟 ดาวศุกร์" onclick="clickBody(1)" 
+           style="width: 18px; height: 18px; background: #fde047; box-shadow: 0 0 12px #fde047;"></div>
+
+      <!-- Planet 3: Neptune (Outermost - Unlocked First) -->
+      <div class="celestial-body" id="planet-neptune" data-name="🌌 ดาวเนปจูน" onclick="clickBody(0)" 
+           style="width: 22px; height: 22px; background: #38bdf8; box-shadow: 0 0 15px #38bdf8;"></div>
+    </div>
+  </div>
+
+  <div class="hint-text">✨ หมุนจักรวาลและแตะดาวที่ส่องแสงเพื่อเปิดอ่านความลับ</div>
+
+  <!-- Modal Display -->
+  <div class="modal" id="modal">
+    <div class="slow-text" id="modal-text"></div>
+    <div class="btn-group" id="btn-group"></div>
+  </div>
+
+  <script>
+    // --- 1. System State & Progression ---
+    let currentStep = 0; // 0: Neptune -> 1: Venus -> 2: Mercury -> 3: Sun
+
+    const storyData = [
+      {
+        text: "จักรวาลนี้กว้างใหญ่มากเลยนะ... แต่รู้ไหมว่าการได้มาเจอเธอ เป็นเรื่องที่โคตรพิเศษที่สุดในระบบสุริยะนี้เลย 🌌",
+        btnText: "ไปดวงถัดไป ✨",
+        bodyId: "planet-neptune",
+        nextBodyId: "planet-venus"
+      },
+      {
+        text: "ยิ่งขยับเข้ามาใกล้เท่าไหร่ ก็ยิ่งรู้สึกว่าความน่ารักของเธอสว่างสดใสยิ่งกว่าดาวดวงไหนๆ ในกาแลกซีนี้ซะอีก 🌟",
+        btnText: "เข้าไปใกล้อีกนิด 💫",
+        bodyId: "planet-venus",
+        nextBodyId: "planet-mercury"
+      },
+      {
+        text: "ดาวดวงนี้อยู่ใกล้ดวงอาทิตย์มากแล้วนะ... เริ่มอุ่นๆ ขึ้นมารึยัง? อยากรู้ความลับสุดท้ายที่ซ่อนอยู่ในดวงอาทิตย์หรือยังนะ? 🥺🔥",
+        btnText: "พร้อมเปิดดวงอาทิตย์แล้ว! ☀️",
+        bodyId: "planet-mercury",
+        nextBodyId: "sun"
+      },
+      {
+        // Final Sun Question
+        text: "คะนิตตเป็นแฟนกันมั้ย 🤭. . 👌🏻♥️",
+        isFinal: true
+      }
+    ];
+
+    function clickBody(index) {
+      if (index !== currentStep) {
+        alert("🔒 ดาวดวงนี้ยังล็อกอยู่! ต้องเปิดดูดาวดวงก่อนหน้าตามลำดับก่อนนะ");
+        return;
+      }
+
+      const modal = document.getElementById('modal');
+      const textContainer = document.getElementById('modal-text');
+      const btnGroup = document.getElementById('btn-group');
+      const data = storyData[index];
+
+      textContainer.innerText = data.text;
+      btnGroup.innerHTML = ''; // Reset buttons
+
+      if (data.isFinal) {
+        // Final Question: Yes / Runaway No
+        btnGroup.innerHTML = `
+          <button class="btn btn-yes" onclick="finishStory()">เป็นค่ะ! 💖</button>
+          <button class="btn btn-no" id="btn-no">ยังไม่อ่ะ</button>
+        `;
+        setTimeout(initRunawayButton, 100);
+      } else {
+        btnGroup.innerHTML = `
+          <button class="btn btn-next" onclick="nextStep('${data.nextBodyId}')">${data.btnText}</button>
+        `;
+      }
+
+      modal.classList.add('active');
+    }
+
+    function nextStep(nextBodyId) {
+      document.getElementById('modal').classList.remove('active');
+      currentStep++;
+      if (nextBodyId) {
+        document.getElementById(nextBodyId).classList.remove('locked');
+      }
+    }
+
+    function finishStory() {
+      const textContainer = document.getElementById('modal-text');
+      const btnGroup = document.getElementById('btn-group');
+      
+      textContainer.innerText = "เย้! ขอบคุณที่ตอบตกลงนะคะ ตกลงเป็นแฟนกันแล้วน้าาา 🥰🎉💖";
+      btnGroup.innerHTML = `<span style="font-size:30px;">💖✨🪷</span>`;
+    }
+
+    // --- 2. Runaway No Button ---
+    function initRunawayButton() {
+      const btnNo = document.getElementById('btn-no');
+      if (!btnNo) return;
+
+      const move = (e) => {
+        if(e) e.preventDefault();
+        const x = (Math.random() - 0.5) * 200;
+        const y = (Math.random() - 0.5) * 120;
+        btnNo.style.transform = `translate(${x}px, ${y}px)`;
+      };
+
+      btnNo.addEventListener('mouseover', move);
+      btnNo.addEventListener('touchstart', move);
+      btnNo.addEventListener('click', move);
+    }
+
+    // --- 3. 3D Solar System Motion & Dragging ---
+    const system = document.getElementById('solar-system');
+    let isDragging = false;
+    let previousMouseX = 0, previousMouseY = 0;
+    let rotX = 20, rotY = 0;
+    let angle = 0;
+
+    // Orbit Radii
+    const planets = [
+      { id: 'planet-neptune', radius: 210, speed: 0.008 },
+      { id: 'planet-venus', radius: 110, speed: 0.015 },
+      { id: 'planet-mercury', radius: 60, speed: 0.025 }
+    ];
+
+    function animateUniverse() {
+      angle += 1;
+      
+      // Orbit Motion
+      planets.forEach(p => {
+        const el = document.getElementById(p.id);
+        const rad = (angle * p.speed);
+        const x = Math.cos(rad) * p.radius;
+        const y = Math.sin(rad) * p.radius;
+        el.style.transform = `translate3d(${x}px, ${y}px, 0px)`;
+      });
+
+      // Universe Rotation
+      system.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+      requestAnimationFrame(animateUniverse);
+    }
+    animateUniverse();
+
+    // Touch/Mouse Drag to Rotate Universe
+    const universe = document.getElementById('universe');
+    
+    const startDrag = (x, y) => { isDragging = true; previousMouseX = x; previousMouseY = y; };
+    const doDrag = (x, y) => {
+      if (!isDragging) return;
+      rotY += (x - previousMouseX) * 0.4;
+      rotX -= (y - previousMouseY) * 0.4;
+      previousMouseX = x;
+      previousMouseY = y;
+    };
+    const stopDrag = () => { isDragging = false; };
+
+    universe.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
+    window.addEventListener('mousemove', (e) => doDrag(e.clientX, e.clientY));
+    window.addEventListener('mouseup', stopDrag);
+
+    universe.addEventListener('touchstart', (e) => startDrag(e.touches[0].clientX, e.touches[0].clientY));
+    window.addEventListener('touchmove', (e) => doDrag(e.touches[0].clientX, e.touches[0].clientY));
+    window.addEventListener('touchend', stopDrag);
+
+    // --- 4. Starfield Canvas ---
+    const canvas = document.getElementById('bg-stars');
+    const ctx = canvas.getContext('2d');
+    
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const starDots = Array.from({ length: 150 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 1.5,
+      alpha: Math.random()
+    }));
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      starDots.forEach(s => {
+        ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fill();
+        s.alpha += (Math.random() - 0.5) * 0.02;
+        if (s.alpha < 0.2) s.alpha = 0.2;
+        if (s.alpha > 1) s.alpha = 1;
+      });
+      requestAnimationFrame(drawStars);
+    }
+    drawStars();
+
+    // --- 5. MP3 Music Controller ---
+    const audio = document.getElementById('bg-music');
+    const musicStatus = document.getElementById('music-status');
+
+    function toggleMusic() {
+      if (audio.paused) {
+        audio.play();
+        musicStatus.innerText = "กำลังเล่นเพลง 🎶";
+      } else {
+        audio.pause();
+        musicStatus.innerText = "หยุดเพลงแล้ว 🔇";
+      }
+    }
+  </script>
+</body>
+</html>
