@@ -225,7 +225,7 @@
   <!-- Audio Player Support (MP3 / Audio URL) -->
   <audio id="bg-music" loop>
     <!-- สามารถเปลี่ยนลิงก์เพลง MP3 ตรงนี้ได้ครับ -->
-    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+    <source src="ScreenRecording_08-01-2569-6-58-44-PM_1.mp3" type="audio/mpeg">
   </audio>
 
   <!-- Music Controller Bar -->
@@ -261,7 +261,7 @@
     </div>
   </div>
 
-  <div class="hint-text">✨ หมุนจักรวาลและแตะดาวที่ส่องแสงเพื่อเปิดอ่านความลับ</div>
+  <div class="hint-text">✨ หมุนจักรวาลและแตะที่ดาวเพื่อเปิดอ่าน👌🏻🤭</div>
 
   <!-- Modal Display -->
   <div class="modal" id="modal">
@@ -275,20 +275,20 @@
 
     const storyData = [
       {
-        text: "จักรวาลนี้กว้างใหญ่มากเลยนะ... แต่รู้ไหมว่าการได้มาเจอเธอ เป็นเรื่องที่โคตรพิเศษที่สุดในระบบสุริยะนี้เลย 🌌",
-        btnText: "ไปดวงถัดไป ✨",
+        text: "จักรวาลกว้างใหญ่มาก ๆ เลย... แต่คะนิตรู้มั้ยว่าการได้มาเจอเธอ เป็นเรื่องที่โคตรพิเศษที่สุดในระบบสุริยะนี้เลย☝🏻❣️",
+        btnText: "ไปดวงถัดไป ",
         bodyId: "planet-neptune",
         nextBodyId: "planet-venus"
       },
       {
-        text: "ยิ่งขยับเข้ามาใกล้เท่าไหร่ ก็ยิ่งรู้สึกว่าความน่ารักของเธอสว่างสดใสยิ่งกว่าดาวดวงไหนๆ ในกาแลกซีนี้ซะอีก 🌟",
-        btnText: "เข้าไปใกล้อีกนิด 💫",
+        text: "เธอน่ารัก เค้ารักเธอรู้มั้ย คิดถึงเท่าทางช้างเผือกเลย 🌟",
+        btnText: "ขยับหน่อย ๆ 💫",
         bodyId: "planet-venus",
         nextBodyId: "planet-mercury"
       },
       {
-        text: "ดาวดวงนี้อยู่ใกล้ดวงอาทิตย์มากแล้วนะ... เริ่มอุ่นๆ ขึ้นมารึยัง? อยากรู้ความลับสุดท้ายที่ซ่อนอยู่ในดวงอาทิตย์หรือยังนะ? 🥺🔥",
-        btnText: "พร้อมเปิดดวงอาทิตย์แล้ว! ☀️",
+        text: "เค้าไม่รู้ว่าเธอจะคิดยังไง เค้าพร้อมรับฟังคำตอบนะ👌🏻👌🏻",
+        btnText: "พร้อมเปิดดวงอาทิตย์เลย ☀️",
         bodyId: "planet-mercury",
         nextBodyId: "sun"
       },
@@ -316,8 +316,8 @@
       if (data.isFinal) {
         // Final Question: Yes / Runaway No
         btnGroup.innerHTML = `
-          <button class="btn btn-yes" onclick="finishStory()">เป็นค่ะ! 💖</button>
-          <button class="btn btn-no" id="btn-no">ยังไม่อ่ะ</button>
+          <button class="btn btn-yes" onclick="finishStory()">Yes 💖</button>
+          <button class="btn btn-no" id="btn-no">No</button>
         `;
         setTimeout(initRunawayButton, 100);
       } else {
@@ -341,8 +341,8 @@
       const textContainer = document.getElementById('modal-text');
       const btnGroup = document.getElementById('btn-group');
       
-      textContainer.innerText = "เย้! ขอบคุณที่ตอบตกลงนะคะ ตกลงเป็นแฟนกันแล้วน้าาา 🥰🎉💖";
-      btnGroup.innerHTML = `<span style="font-size:30px;">💖✨🪷</span>`;
+      textContainer.innerText = "เย่ ! ขอบคุณที่ตอบตกลงนะคะ ตกลงเป็นแฟนกันแล้วน้าาา เขินมากมากอะ👌🏻🤭❣️";
+      btnGroup.innerHTML = `<span style="font-size:30px;">. . .☝🏻🪷</span>`;
     }
 
     // --- 2. Runaway No Button ---
